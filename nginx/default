@@ -1,0 +1,30 @@
+##VIRTUALHOST
+
+server {
+    listen  80;
+    listen   [::]:80 default ipv6only=on;
+
+    # this path MUST be exactly as docker-compose.fpm.volumes,
+    # even if it doesn't exists in this dock.
+    root /var/www/html;
+    index index.php index.html index.html;
+    
+    server_name localhost;
+    sendfile off;
+
+    error_log /dev/stdout info;
+    access_log /dev/stdout;
+
+    location / {
+        try_files $uri $uri/ /index.php?q=$uri&$args;
+    }
+
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass phpfpm:9000; 
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_index index.php;
+        include fastcgi_params;
+
+    }
+}

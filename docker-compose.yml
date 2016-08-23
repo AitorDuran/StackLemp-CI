@@ -1,0 +1,79 @@
+version: '2'
+services:  
+  frontend:
+    hostname: frontend
+    image: tutum/nginx
+    ports:
+       - "8080:80"
+    depends_on:
+      - phpfpm
+      - my-db
+    networks:
+      - front
+      - back
+    volumes:
+      - ./nginx/default:/etc/nginx/sites-available/default
+      - ./nginx/default:/etc/nginx/sites-enabled/default
+
+      - ./logs/nginx-error.log:/var/log/nginx/error.log
+      - ./logs/nginx-access.log:/var/log/nginx/access.log
+
+  phpfpm:
+    hostname: phpfpm
+    image: php:fpm
+    ports:
+      - "9000:9000"
+    networks:
+      - back
+    volumes:
+      - ./public:/var/www/html
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+
+  my-db:
+    hostname: my-db
+    image: mysql:latest
+    ports:
+      - "3030:3030"
+    networks:
+      - back
+    environment: 
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: webdata
+      MYSQL_USER: web_user
+
+  phpmyadmin:
+    hostname: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - my-db
+    networks:
+      - back
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: my-db
+      PMA_USER: root
+      PMA_PASSWORD: secret
+    restart: always
+    ports:
+      - "8888:80"
+
+  cadvisor:
+    hostname: cadvisor
+    image: google/cadvisor
+    ports:
+      - "8787:8080"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+    networks:
+      - front
+      - back
+  
+networks:
+  front:
+    driver: bridge
+  back:
+    driver: bridge
