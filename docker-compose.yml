@@ -22,9 +22,6 @@ services:
       - ./nginx/default:/etc/nginx/sites-available/default
       - ./nginx/default:/etc/nginx/sites-enabled/default
 
-      - ./logs/nginx-error.log:/var/log/nginx/error.log
-      - ./logs/nginx-access.log:/var/log/nginx/access.log
-
   phpfpm:
     hostname: phpfpm
     image: php:fpm
