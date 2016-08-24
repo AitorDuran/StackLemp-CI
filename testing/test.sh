@@ -10,4 +10,3 @@ else
         echo "El test no ha realizado las pruebas correctamente" 
         exit 1
 fi
-~   
