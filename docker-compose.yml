@@ -3,7 +3,7 @@ services:
 
   testing:
     hostname: testing
-    build: ./testing
+    build: testing
     networks:
       - front
 
